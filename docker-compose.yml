@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql
+    container_name: mytraining-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: Simple123
+      MYSQL_DATABASE: MyTraining
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      # - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - node-network
+
+  adminer:
+    image: adminer
+    container_name: adminer
+    ports:
+      - 5000:8080
+    networks:
+      - node-network
+    depends_on:
+      - mysql
+
+  nextjs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nextjs-app
+    environment:
+      DATABASE_URL: mysql://root:Simple123@mytraining-mysql:3306/MyTraining
+      NEXTAUTH_SECRET: aipd
+      NEXTAUTH_URL: info.famimavn.com
+    ports:
+      - "5962:3000"
+    depends_on:
+      - mysql
+    networks:
+      - node-network
+    restart: always  # Thêm dòng này
+
+volumes:
+  mysql-data:
+
+networks:
+  node-network:

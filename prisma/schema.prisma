@@ -1,0 +1,63 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Courses {
+  id            Int            @id @default(autoincrement())
+  title         String         @db.VarChar(200)
+  description   String?        @db.Text
+  imgSrc        String?        @db.Text
+  created_by    Int?
+  created_at    DateTime?      @default(now()) @db.DateTime(0)
+  updated_at    DateTime?      @db.DateTime(0)
+  total_videos  Int?           @default(0)
+  display_order Int?
+  UsersCourses  UsersCourses[]
+  Videos        Videos[]
+}
+
+model Users {
+  id           Int            @id @default(autoincrement())
+  user_id      String?        @unique(map: "user_id") @db.VarChar(100)
+  name         String         @db.VarChar(100)
+  full_name    String?        @db.VarChar(255)
+  day_off      DateTime?      @db.Date
+  email        String         @unique(map: "email") @db.VarChar(100)
+  password     String?        @db.VarChar(255)
+  role         String?        @db.VarChar(10)
+  created_at   DateTime?      @default(now()) @db.DateTime(0)
+  update_at    DateTime?      @db.DateTime(0)
+  UsersCourses UsersCourses[]
+}
+
+model UsersCourses {
+  id        Int     @id @default(autoincrement())
+  user_id   Int
+  course_id Int
+  watched   Int?    @default(0)
+  Users     Users   @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "UsersCourses_ibfk_1")
+  Courses   Courses @relation(fields: [course_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "UsersCourses_ibfk_2")
+
+  @@index([course_id], map: "course_id")
+  @@index([user_id], map: "user_id")
+}
+
+model Videos {
+  id            Int       @id @default(autoincrement())
+  title         String    @db.VarChar(200)
+  url           String    @db.VarChar(500)
+  course_id     Int?
+  created_at    DateTime? @default(now()) @db.DateTime(0)
+  display_order Int?
+  updated_at    DateTime? @db.DateTime(0)
+  description   String?   @db.Text
+  Courses       Courses?  @relation(fields: [course_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Videos_ibfk_1")
+
+  @@index([course_id], map: "course_id")
+}
