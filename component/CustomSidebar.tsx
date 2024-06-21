@@ -98,9 +98,6 @@ const CustomSidebar: React.FC = () => {
                 {session?.user?.name || "Famima"}
               </div>
             </div>
-            <div className="text-center mt-4">
-              <p>Số lần nhấn nút fullscreen: {fullscreenClickCount}</p>
-            </div>
           </div>
         )}
         {!selectedVideo && (
