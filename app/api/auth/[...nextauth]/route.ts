@@ -10,6 +10,7 @@ interface CustomUser extends AdapterUser {
   email: string;
   phone: string;
   role: string;
+  name: string;
 }
 
 declare module "next-auth" {
@@ -18,6 +19,7 @@ declare module "next-auth" {
       id: string;
       phone: string;
       role: string;
+      name: string;
     } & DefaultSession["user"];
   }
 
@@ -26,6 +28,7 @@ declare module "next-auth" {
     email: string;
     phone: string;
     role: string;
+    name: string;
   }
 }
 
@@ -66,6 +69,7 @@ const authOptions: NextAuthOptions = {
           id: customUser.id,
           phone: customUser.phone,
           role: customUser.role,
+          name: customUser.name,
         };
       }
       return token;
@@ -76,6 +80,7 @@ const authOptions: NextAuthOptions = {
         id: token.id as string,
         phone: token.phone as string,
         role: token.role as string,
+        name: token.name as string,
       };
       return session;
     },
@@ -105,14 +110,15 @@ async function fetchUserFromDatabase(
         email: email,
       },
     });
-
+     console.log("user", user); 
     if (user && user.password === password) {
       return {
         id: user.id.toString(),
         email: user.email,
         phone: user.password,
         role: user.role || "",
-        emailVerified:  new Date(user.email)
+        emailVerified:  new Date(user.email),
+        name: user.name,
       };
     }
 
