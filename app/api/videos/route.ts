@@ -93,6 +93,7 @@ export async function GET(req: NextRequest) {
               title: true,
               url: true,
               description: true,
+              id: true,
             },
           },
           

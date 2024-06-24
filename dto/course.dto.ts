@@ -29,6 +29,7 @@ export interface CreateCourseDto {
     title: string;
     url: string;
     description: string;
+    id: number;
   }
   
   export interface CourseWithVideosDto {

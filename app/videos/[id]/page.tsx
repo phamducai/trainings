@@ -5,7 +5,7 @@ import { CourseDto } from "@/dto/course.dto";
 import axios from "axios";
 import { Button, Label, TextInput, Textarea, Select } from "flowbite-react";
 import { useEffect, useState } from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { useParams, useRouter } from "next/navigation";
 import { Header } from "@/component/Header";
 
@@ -21,6 +21,7 @@ const EditVideo: React.FC = () => {
     register,
     handleSubmit,
     setValue,
+    control,
     formState: { errors },
   } = useForm<FormValues>();
   const [message, setMessage] = useState<string | null>(null);
@@ -43,6 +44,8 @@ const EditVideo: React.FC = () => {
         try {
           const res = await axios.get(`/api/videos/${id}`);
           const video = res.data;
+          console.log("Fetched video details:", video);
+
           setValue("title", video.title);
           setValue("course_id", video.course_id);
           setValue("description", video.description);
@@ -56,8 +59,9 @@ const EditVideo: React.FC = () => {
     fetchCourses();
     fetchVideoDetails();
   }, [id, setValue]);
-  id
+
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
+    console.log(data);
     try {
       await axios.put(`/api/videos/${id}`, data);
       router.push("/videos");
@@ -66,16 +70,6 @@ const EditVideo: React.FC = () => {
       setMessage("Error updating video.");
     }
   };
-
-//   const handleDelete = async () => {
-//     try {
-//       await axios.delete(`/api/videos/${id}`);
-//       router.push("/videos");
-//     } catch (error) {
-//       console.error("Error deleting video:", error);
-//       setMessage("Error deleting video.");
-//     }
-//   };
 
   return (
     <div className="">
@@ -103,15 +97,21 @@ const EditVideo: React.FC = () => {
                 <div className="mb-2 block">
                   <Label htmlFor="course_id" value="Khóa Học" />
                 </div>
-                <Select
-                  id="course_id"
-                  {...register("course_id", { required: "Course is required" })}
-                >
-                  <option value="">Chọn Khóa Học</option>
-                  {courses.map(course => (
-                    <option key={course.id} value={course.id}>{course.title}</option>
-                  ))}
-                </Select>
+                <Controller
+                  name="course_id"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      id="course_id"
+                      {...field}
+                    >
+                      <option value="">Chọn Khóa Học</option>
+                      {courses.map(course => (
+                        <option key={course.id} value={course.id}>{course.title}</option>
+                      ))}
+                    </Select>
+                  )}
+                />
                 {errors.course_id && <p className="text-red-600">{errors.course_id.message}</p>}
               </div>
               <div>
@@ -139,7 +139,6 @@ const EditVideo: React.FC = () => {
                 {errors.description && <p className="text-red-600">{errors.description.message}</p>}
               </div>
               <Button type="submit">Cập Nhật Video</Button>
-           
             </form>
           </div>
         </div>
