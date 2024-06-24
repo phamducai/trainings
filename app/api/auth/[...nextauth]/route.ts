@@ -11,6 +11,8 @@ interface CustomUser extends AdapterUser {
   phone: string;
   role: string;
   name: string;
+  use_id:string;
+  full_name:string;
 }
 
 declare module "next-auth" {
@@ -20,6 +22,8 @@ declare module "next-auth" {
       phone: string;
       role: string;
       name: string;
+      use_id:string;
+      full_name:string;
     } & DefaultSession["user"];
   }
 
@@ -29,6 +33,8 @@ declare module "next-auth" {
     phone: string;
     role: string;
     name: string;
+    use_id:string;
+    full_name:string;
   }
 }
 
@@ -70,6 +76,8 @@ const authOptions: NextAuthOptions = {
           phone: customUser.phone,
           role: customUser.role,
           name: customUser.name,
+          use_id:customUser.use_id,
+          full_name:customUser.full_name,
         };
       }
       return token;
@@ -81,6 +89,8 @@ const authOptions: NextAuthOptions = {
         phone: token.phone as string,
         role: token.role as string,
         name: token.name as string,
+        use_id:token.use_id as string,
+        full_name:token.full_name as string,
       };
       return session;
     },
@@ -119,6 +129,8 @@ async function fetchUserFromDatabase(
         role: user.role || "",
         emailVerified:  new Date(user.email),
         name: user.name,
+        use_id:user.user_id || "",
+        full_name:user.full_name || "",
       };
     }
 

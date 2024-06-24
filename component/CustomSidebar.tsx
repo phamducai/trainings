@@ -95,7 +95,7 @@ const CustomSidebar: React.FC = () => {
                 <source src={selectedVideo.url} type="video/mp4" />
               </video>
               <div ref={watermarkRef} className="watermark normal-watermark">
-                {session?.user?.name || "Famima"}
+                {session?.user?.use_id || ""} -  {session?.user?.full_name || ""} 
               </div>
             </div>
           </div>
