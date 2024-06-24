@@ -91,6 +91,7 @@ const CustomSidebar: React.FC = () => {
                 style={{ transform: `scale(${zoomLevel})` }}
                 className="no-fullscreen-button"
                 disablePictureInPicture
+                autoPlay
               >
                 <source src={selectedVideo.url} type="video/mp4" />
               </video>

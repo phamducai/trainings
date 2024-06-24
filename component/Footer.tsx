@@ -1,5 +1,5 @@
 import { Footer } from "flowbite-react";
-import { BsFacebook, BsTiktok, BsYoutube } from "react-icons/bs";
+import { BsFacebook, BsTiktok, BsYoutube,BsFillPhoneFill, BsMailbox2Flag} from "react-icons/bs";
 
 export function FooterComponents() {
   const currentYear = new Date().getFullYear();
@@ -27,6 +27,8 @@ export function FooterComponents() {
             <Footer.Icon href="https://www.facebook.com/FamilyMartVietnam/" icon={BsFacebook} />
             <Footer.Icon href="#" icon={BsYoutube} />
             <Footer.Icon href="https://www.tiktok.com/@familymartvnofficial" icon={BsTiktok} />
+            {/* <Footer.Icon href="028 3930 6575" icon={BsFillPhoneFill} />
+            <Footer.Icon href="nhansu@famima.vn" icon={BsMailbox2Flag} type="email"/> */}
           </div>
         </div>
       </div>
