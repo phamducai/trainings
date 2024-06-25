@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { Sidebar, Accordion } from "flowbite-react";
 import clsx from "clsx";
 import axios from "axios";
@@ -35,8 +35,18 @@ const CustomSidebar: React.FC = () => {
     }
     fetchData();
   }, [id]);
+
   const handlePlayerReady = (player: any) => {
     console.log('Player is ready', player);
+  };
+
+  const handleVideoEnded = () => {
+    console.log('Video ended in CustomSidebar');
+    if (course && activeIndex !== null && activeIndex < course.Videos.length - 1) {
+      const nextIndex = activeIndex + 1;
+      setSelectedVideo(course.Videos[nextIndex]);
+      setActiveIndex(nextIndex);
+    }
   };
 
   return (
@@ -46,7 +56,7 @@ const CustomSidebar: React.FC = () => {
           <div className="mt-10">
             <div className="text-center text-2xl font-bold text-gray-700 mb-4">{selectedVideo.title}</div>
             <div className="flex justify-center relative">
-            <VideoJS
+              <VideoJS
                 options={{
                   autoplay: true,
                   controls: true,
@@ -55,6 +65,7 @@ const CustomSidebar: React.FC = () => {
                   sources: [{ src: selectedVideo.url, type: 'video/mp4' }],
                 }}
                 onReady={handlePlayerReady}
+                onEnded={handleVideoEnded}
               />
             </div>
           </div>
