@@ -43,6 +43,9 @@ const VideoJS: React.FC<VideoJSProps> = ({ options, onReady }) => {
       videoElement.classList.add('video-js', 'vjs-big-play-centered','custom-video-border');
       videoElement.style.width = '100%';
       videoElement.style.height = '100%';
+      videoElement.setAttribute('controlsList', 'nodownload');
+      // videoElement.setAttribute('disablePictureInPicture', 'true');
+
       videoRef.current?.appendChild(videoElement);
 
       const player = playerRef.current = videojs(videoElement, options, function() {
