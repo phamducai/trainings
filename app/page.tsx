@@ -7,11 +7,12 @@ import { CarouselComponent } from "@/component/CarouselComponent";
 import { Header } from "@/component/Header";
 import { CardComponent } from "@/component/CardComponent";
 import { FooterComponents } from "@/component/Footer";
-
+import { LoadingComponent } from "@/component/Loading";
 
 export default function Home() {
   const [courses, setCourses] = useState<CourseDto[]>([]);
-  
+  const [loading, setLoading] = useState<boolean>(true);
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -19,6 +20,8 @@ export default function Home() {
         setCourses(res.data);
       } catch (error) {
         console.error("Error fetching courses:", error);
+      } finally {
+        setLoading(false);
       }
     }
     fetchData();
@@ -26,23 +29,27 @@ export default function Home() {
 
   return (
     <div className="">
-    <Header />
-    <div className="mt-20 container mx-auto mb-80">
-      <div className="h-72 sm:h-96">
-        <CarouselComponent />
-      </div>
-      <div className="mt-5">
-        <h1 className="font-bold text-xl md:text-2xl lg:text-3xl">
-          Khóa Học Training Famima
-        </h1>
-        <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {courses.map((course) => (
-            <CardComponent key={course.id} course={course} />
-          ))}
+      <Header />
+      {loading ? (
+        <LoadingComponent />
+      ) : (
+        <div className="mt-20 container mx-auto mb-80">
+          <div className="h-72 sm:h-96">
+            <CarouselComponent />
+          </div>
+          <div className="mt-5">
+            <h1 className="font-bold text-xl md:text-2xl lg:text-3xl">
+              Khóa Học Training Famima
+            </h1>
+            <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {courses.map((course) => (
+                <CardComponent key={course.id} course={course} />
+              ))}
+            </div>
+          </div>
         </div>
-      </div>
+      )}
+      <FooterComponents />
     </div>
-    <FooterComponents />
-  </div>
   );
 }

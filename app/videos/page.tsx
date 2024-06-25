@@ -9,19 +9,23 @@ import { useRouter } from "next/navigation";
 import { ListVideoDto } from "@/dto/course.dto";
 import { ConfirmModal } from "@/component/ConfirmModal";
 import { Header } from "@/component/Header";
+import { useSession } from "next-auth/react";
 
 export default function Courses() {
   const [videos, setVideos] = useState<ListVideoDto[]>([]);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [videoToDelete, setVideoToDelete] = useState<number | null>(null);
   const router = useRouter();
+  const { data: session } = useSession();
 
   useEffect(() => {
+    if (!session || session.user.role !== "admin") {
+      router.push("/");
+      return;
+    }
     async function fetchData() {
       try {
-        console.log("Fetching videos...");
         const res = await axios.get("/api/videos");
-        console.log("Videos fetched:", res.data);
         setVideos(res.data);
       } catch (error) {
         console.error("Error fetching videos:", error);

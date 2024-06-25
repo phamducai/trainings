@@ -7,6 +7,7 @@ import axios from "axios";
 import { CourseWithVideosDto, VideoDto } from "@/dto/course.dto";
 import { useParams } from "next/navigation";
 import VideoJS from "./VideoJS";
+import { LoadingComponent } from "./Loading";
 
 const CustomSidebar: React.FC = () => {
   const [selectedVideo, setSelectedVideo] = useState<VideoDto | null>(null);
@@ -50,6 +51,7 @@ const CustomSidebar: React.FC = () => {
       setActiveIndex(nextIndex);
     }
   };
+  if(loading) return <LoadingComponent />
 
   return (
     <div className="sm:flex h-screen overflow-y-auto sticky top-16">

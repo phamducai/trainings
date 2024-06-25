@@ -7,13 +7,20 @@ import { format } from "date-fns";
 import { CourseDto } from "@/dto/course.dto";
 import { useRouter } from "next/navigation";
 import { Header } from "@/component/Header";
+import { useSession } from "next-auth/react";
 
 
 export default function Admin() {
   const [courses, setCourses] = useState<CourseDto[]>([]);
   const router = useRouter();
+  const { data: session } = useSession();
 
   useEffect(() => {
+    if (!session || session.user.role !== "admin") {
+      router.push("/"); // Redirect to home if not admin
+      return;
+    }
+
     async function fetchData() {
       try {
         const res = await axios.get("/api/courses");
