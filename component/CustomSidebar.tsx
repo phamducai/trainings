@@ -6,25 +6,18 @@ import clsx from "clsx";
 import axios from "axios";
 import { CourseWithVideosDto, VideoDto } from "@/dto/course.dto";
 import { useParams } from "next/navigation";
-import { useSession } from "next-auth/react";
+import VideoJS from "./VideoJS";
 
 const CustomSidebar: React.FC = () => {
   const [selectedVideo, setSelectedVideo] = useState<VideoDto | null>(null);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [course, setCourse] = useState<CourseWithVideosDto | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [zoomLevel, setZoomLevel] = useState<number>(1);
-  const [fullscreenClickCount, setFullscreenClickCount] = useState<number>(0);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const watermarkRef = useRef<HTMLDivElement>(null);
-  const { data: session } = useSession();
-
   const { id } = useParams();
 
   const handleItemClick = (video: VideoDto | null, index: number | null) => {
     setSelectedVideo(video);
     setActiveIndex(index);
-    setZoomLevel(1); // Reset zoom level when a new video is selected
   };
 
   useEffect(() => {
@@ -42,37 +35,9 @@ const CustomSidebar: React.FC = () => {
     }
     fetchData();
   }, [id]);
-
-  useEffect(() => {
-    const handleFullscreenChange = () => {
-      if (watermarkRef.current && videoRef.current) {
-        const isFullscreen = document.fullscreenElement === videoRef.current;
-
-        if (isFullscreen) {
-          watermarkRef.current.classList.add('fullscreen-watermark');
-          watermarkRef.current.classList.remove('normal-watermark');
-        } else {
-          watermarkRef.current.classList.remove('fullscreen-watermark');
-          watermarkRef.current.classList.add('normal-watermark');
-          setFullscreenClickCount((prevCount) => prevCount + 1);
-        }
-        
-        console.log("isFullscreen", isFullscreen);
-      }
-    };
-
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-    document.addEventListener('mozfullscreenchange', handleFullscreenChange);
-    document.addEventListener('MSFullscreenChange', handleFullscreenChange);
-
-    return () => {
-      document.removeEventListener('fullscreenchange', handleFullscreenChange);
-      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
-      document.removeEventListener('mozfullscreenchange', handleFullscreenChange);
-      document.removeEventListener('MSFullscreenChange', handleFullscreenChange);
-    };
-  }, []);
+  const handlePlayerReady = (player: any) => {
+    console.log('Player is ready', player);
+  };
 
   return (
     <div className="sm:flex h-screen overflow-y-auto sticky top-16">
@@ -81,23 +46,16 @@ const CustomSidebar: React.FC = () => {
           <div className="mt-10">
             <div className="text-center text-2xl font-bold text-gray-700 mb-4">{selectedVideo.title}</div>
             <div className="flex justify-center relative">
-              <video
-                key={selectedVideo.url}
-                ref={videoRef}
-                controls
-                width={`${80 * zoomLevel}%`}
-                height="auto"
-                controlsList="nodownload"
-                style={{ transform: `scale(${zoomLevel})` }}
-                className="no-fullscreen-button"
-                disablePictureInPicture
-                autoPlay
-              >
-                <source src={selectedVideo.url} type="video/mp4" />
-              </video>
-              <div ref={watermarkRef} className="watermark normal-watermark">
-                {session?.user?.use_id || ""} -  {session?.user?.full_name || ""} 
-              </div>
+            <VideoJS
+                options={{
+                  autoplay: true,
+                  controls: true,
+                  responsive: true,
+                  fluid: true,
+                  sources: [{ src: selectedVideo.url, type: 'video/mp4' }],
+                }}
+                onReady={handlePlayerReady}
+              />
             </div>
           </div>
         )}

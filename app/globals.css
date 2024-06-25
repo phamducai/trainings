@@ -59,31 +59,21 @@ body {
   max-width: 640px;
   margin: auto;
 }
-
-
-
-.watermark {
-  position: absolute;
-  z-index: 10;
-  color: white;
-  background: rgba(0, 0, 0, 0.5);
-  padding: 5px 10px;
-  border-radius: 5px;
-  font-size: 16px;
-  pointer-events: none;
-  opacity: 0.7;
-  bottom: 2%;
-  left: 11%;
-}
-
-.fullscreen-watermark {
-  position: fixed !important;
-  bottom: 10px !important;
-  left: 10px !important;
-  z-index: 999999 !important;
-  color: red; /* Màu sắc nổi bật để kiểm tra */
-}
 .mr-6{
   margin-right: 24px;
 }
 
+.custom-video-border {
+  border: 2px solid #000; /* Thay đổi màu sắc và độ dày của viền tùy ý */
+  border-radius: 8px; /* Thêm bo tròn cho viền nếu muốn */
+}
+/* .vjs-watermark {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: white;
+  font-size: 18px;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 5px;
+  z-index: 10;
+} */
