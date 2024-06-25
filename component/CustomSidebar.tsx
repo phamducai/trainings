@@ -43,7 +43,9 @@ const CustomSidebar: React.FC = () => {
   const handleVideoEnded = () => {
     console.log('Video ended in CustomSidebar');
     if (course && activeIndex !== null && activeIndex < course.Videos.length - 1) {
+   
       const nextIndex = activeIndex + 1;
+      console.log('Next video',nextIndex);
       setSelectedVideo(course.Videos[nextIndex]);
       setActiveIndex(nextIndex);
     }
@@ -75,7 +77,7 @@ const CustomSidebar: React.FC = () => {
             {course && (
               <Accordion collapseAll className="w-full">
                 {course.Videos?.map((video) => (
-                  <Accordion.Panel key={video.title}>
+                  <Accordion.Panel key={video.id}>
                     <Accordion.Title>{video.title}</Accordion.Title>
                     <Accordion.Content>{video.description}</Accordion.Content>
                   </Accordion.Panel>
@@ -103,7 +105,7 @@ const CustomSidebar: React.FC = () => {
                 </Sidebar.Item>
                 {course.Videos?.map((video, videoIndex) => (
                   <Sidebar.Item
-                    key={videoIndex}
+                    key={video.id}
                     onClick={() => handleItemClick(video, videoIndex)}
                     className={clsx({
                       "bg-gray-200 font-bold": activeIndex === videoIndex,
