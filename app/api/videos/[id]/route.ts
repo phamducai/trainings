@@ -1,5 +1,7 @@
 import prisma from "@/utils/prisma";
 import { NextResponse } from "next/server";
+import fs from "fs";
+import path from "path";
 
 export async function GET(
   req: Request,
@@ -57,10 +59,28 @@ export async function DELETE(
   const videoId = parseInt(params.id, 10);
 
   try {
+    const video = await prisma.videos.findUnique({
+      where: { id: videoId }
+    });
+
+    if (!video) {
+      return NextResponse.json(
+        { message: "Video not found" },
+        { status: 404 }
+      );
+    }
     await prisma.videos.delete({
       where: { id: videoId },
     });
 
+    if (video.url) {
+      const videoFilePath = path.join(process.cwd(), "public", video.url.split('?')[0]); // Remove query params from URL
+      if (fs.existsSync(videoFilePath)) {
+        fs.unlinkSync(videoFilePath);
+      } else {
+        console.error(`File ${videoFilePath} does not exist`);
+      }
+    }
     return NextResponse.json({ message: "Video deleted successfully" });
   } catch (error) {
     console.error("Error deleting video:", error);
