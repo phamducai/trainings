@@ -103,7 +103,7 @@ const CustomSidebar: React.FC = () => {
                     "bg-gray-200 font-bold": activeIndex === null,
                   })}
                 >
-                  Tổng quan
+                  TỔNG QUAN
                 </Sidebar.Item>
                 {course.Videos?.map((video, videoIndex) => (
                   <Sidebar.Item
