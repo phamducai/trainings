@@ -1,20 +1,17 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import { getToken } from "next-auth/jwt";
-
-export async function middleware(request: NextRequest) {
-  const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
-
-  if (!token && request.nextUrl.pathname !== "/login") {
-    return NextResponse.redirect(new URL("/login", request.url));
+import type { NextRequest } from 'next/server'
+ 
+export function middleware(request: NextRequest) {
+  const currentUser = request.cookies.get('session')?.value
+//  console.log(currentUser);
+  if (currentUser && !request.nextUrl.pathname.startsWith('/')) {
+    return Response.redirect(new URL('/', request.url))
   }
-
-  return NextResponse.next();
+ 
+  if (!currentUser && !request.nextUrl.pathname.startsWith('/login')) {
+    return Response.redirect(new URL('/login', request.url))
+  }
 }
-
-// // Các route cần bảo vệ
+ 
 export const config = {
-  matcher: [
-    '/((?!api|_next|static|favicon.ico).*)',
-  ],
-};
+  matcher: ['/((?!api|_next/static|_next/image|.*\\.png$).*)'],
+}

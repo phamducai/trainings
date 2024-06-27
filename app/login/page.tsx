@@ -1,9 +1,9 @@
 "use client";
 
-import { signIn } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import axios from 'axios';
 
 type FormData = {
   email: string;
@@ -17,17 +17,12 @@ export default function Login() {
   const router = useRouter();
 
   const onSubmit = async (data: FormData) => {
-    const result = await signIn("credentials", {
-      redirect: false,
-      email: data.email,
-      password: data.password,
-    });
-
-    if (!result?.error) {
-      router.push("/");
-    } else {
-      setError("Email hoặc mật khẩu không đúng");
-    }
+    const res = await axios.post('/api/login', data);
+      if (res.status == 200) {
+        router.push('/');
+      } else {
+        setError(res.data.message);
+      }
   };
 
   const togglePasswordVisibility = () => {

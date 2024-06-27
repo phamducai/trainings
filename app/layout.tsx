@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import CustomSessionProvider from "./session-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,13 +19,7 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/favicon.ico" />
       </head>
-      <body className={inter.className}>
-      <CustomSessionProvider>
-
-        {children}
-        </CustomSessionProvider>
-
-        </body>
+      <body className={inter.className}>{children}</body>
     </html>
   );
 }

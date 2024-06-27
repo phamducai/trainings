@@ -2,7 +2,6 @@
 import React, { useEffect, useRef } from 'react';
 import videojs from 'video.js';
 import 'video.js/dist/video-js.css';
-import { useSession } from 'next-auth/react';
 
 // Define the types we need explicitly
 interface VideoJsPlayerOptions {
@@ -40,7 +39,7 @@ interface VideoJSProps {
 const VideoJS: React.FC<VideoJSProps> = ({ options, onReady, onEnded }) => {
   const videoRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<VideoJsPlayer | null>(null);
-  const { data: session } = useSession();
+  // const { data: session } = useSession();
   const currentTimeRef = useRef(0);
 
   useEffect(() => {
@@ -62,7 +61,7 @@ const VideoJS: React.FC<VideoJSProps> = ({ options, onReady, onEnded }) => {
 
           // Add watermark
           const watermarkDiv = document.createElement('div');
-          watermarkDiv.innerText = `${session?.user?.use_id || ""} - ${session?.user?.full_name || ""}`;
+          // watermarkDiv.innerText = `${session?.user?.use_id || ""} - ${session?.user?.full_name || ""}`;
           watermarkDiv.style.position = 'absolute';
           watermarkDiv.style.top = '10px';
           watermarkDiv.style.right = '10px';
