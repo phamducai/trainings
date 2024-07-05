@@ -1,3 +1,41 @@
+// 'use client';
+
+// import { useState } from 'react';
+// import axios from 'axios';
+
+// export default function Home() {
+//   const [loading, setLoading] = useState(false);
+
+//   const handleExport = async () => {
+//     setLoading(true);
+//     try {
+//       const res = await axios.get('/api/enqueue', {
+//         responseType: 'blob',
+//       });
+//       const url = window.URL.createObjectURL(new Blob([res.data]));
+//       const link = document.createElement('a');
+//       link.href = url;
+//       link.setAttribute('download', 'users.csv');
+//       document.body.appendChild(link);
+//       link.click();
+//     } catch (error) {
+//       console.error('Error exporting data:', error);
+//       alert('An error occurred while exporting the data');
+//     }
+//     setLoading(false);
+//   };
+
+//   return (
+//     <div>
+//       <h1>Export Data to CSV</h1>
+//       <button onClick={handleExport} disabled={loading}>
+//         {loading ? 'Processing...' : 'Export Data'}
+//       </button>
+//     </div>
+//   );
+// }
+
+
 "use client";
 import { useEffect, useState } from "react";
 import axios from "axios";

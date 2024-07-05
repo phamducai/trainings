@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   mysql:
     image: mysql
@@ -21,6 +23,14 @@ services:
       - node-network
     depends_on:
       - mysql
+
+  redis:
+    image: redis
+    container_name: mytraining-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - node-network
 
 volumes:
   mysql-data:

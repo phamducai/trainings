@@ -28,6 +28,9 @@ export function SidebarAdmin() {
               Thêm Video
             </Sidebar.Item>
           </Sidebar.Collapse>
+          <Sidebar.Item onClick={() => router.push("/videos")} className=" cursor-pointer font-bold">
+            Xuất Data
+          </Sidebar.Item>
         </Sidebar.ItemGroup>
       </Sidebar.Items>
     </Sidebar>

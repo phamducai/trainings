@@ -3,6 +3,7 @@ import React, { useEffect, useRef } from 'react';
 import videojs from 'video.js';
 import 'video.js/dist/video-js.css';
 import { useSession } from 'next-auth/react';
+import axios from 'axios';
 
 // Define the types we need explicitly
 interface VideoJsPlayerOptions {
@@ -13,6 +14,7 @@ interface VideoJsPlayerOptions {
   sources?: {
     src: string;
     type: string;
+    id: number;
   }[];
   poster?: string;
 }
@@ -91,8 +93,18 @@ const VideoJS: React.FC<VideoJSProps> = ({ options, onReady, onEnded }) => {
           updateWatermarkPosition();
 
           // Listen for the ended event
-          player.on('ended', () => {
-            console.log('Video ended in VideoJS 1');
+          player.on('ended', async () => {
+            if (session && session.user) {
+              try {
+                console.log(session.user.id, options.sources?.[0])
+                const response = await axios.post('/api/markVideoWatched', {
+                  userId: session.user.id ?? 0,
+                  videoId: options.sources?.[0].id ??0,
+                });
+             } catch (error) {
+                console.error('Error marking video as watched:', error);
+              }
+            }
             if (onEnded) {
               onEnded();
             }
