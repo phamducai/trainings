@@ -7,8 +7,8 @@ const queue = new Bull('data-processing', {
   },
 });
 
-export const addJobToQueue = () => {
-  queue.add({});
+export const addJobToQueue = (batchSize: number, batchIndex: number) => {
+  queue.add({ batchSize, batchIndex });
 };
 
 export default queue;
