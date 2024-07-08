@@ -66,7 +66,7 @@ const CustomSidebar: React.FC = () => {
                   controls: true,
                   responsive: true,
                   fluid: true,
-                  sources: [{ src: selectedVideo.url, type: 'video/mp4' ,id: selectedVideo.id}],
+                  sources: [{ src: selectedVideo.url, type: 'video/mp4' ,id: selectedVideo.id,couseId:+id}],
                 }}
                 onReady={handlePlayerReady}
                 onEnded={handleVideoEnded}

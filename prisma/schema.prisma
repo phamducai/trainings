@@ -66,12 +66,13 @@ model Videos {
 
 model usersVideo {
   id         Int     @id @default(autoincrement())
-  user_id    Int
+  user_id    String  @db.VarChar(100)
   video_id   Int
   is_watched Boolean
-  Users      Users   @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "usersVideo_ibfk_1")
-  Videos     Videos  @relation(fields: [video_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "usersVideo_ibfk_2")
+  course_id  Int?
+  Users      Users   @relation(fields: [user_id], references: [user_id], onUpdate: Restrict, map: "usersVideo_ibfk_1")
+  Videos     Videos  @relation(fields: [video_id], references: [id], onUpdate: Restrict, map: "usersVideo_ibfk_2")
 
-  @@unique([user_id, video_id], map: "user_id")
+  @@unique([user_id, video_id], map: "user_id_video_id")
   @@index([video_id], map: "video_id")
 }
