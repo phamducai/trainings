@@ -45,7 +45,6 @@ const VideoJS: React.FC<VideoJSProps> = ({ options, onReady, onEnded }) => {
   const playerRef = useRef<VideoJsPlayer | null>(null);
   const { data: session } = useSession();
   const currentTimeRef = useRef(0);
- console.log(session?.user)
   useEffect(() => {
     const initializePlayer = () => {
       if (!playerRef.current) {
@@ -110,17 +109,6 @@ const VideoJS: React.FC<VideoJSProps> = ({ options, onReady, onEnded }) => {
 
             // Listen for the ended event
             player.on("ended", async () => {
-              if (session && session.user) {
-                try {
-                  await axios.post("/api/markVideoWatched", {
-                    userId: session.user.use_id ?? 0,
-                    videoId: options.sources?.[0].id ?? 0,
-                    courseId: options.sources?.[0].couseId ?? 0,
-                  });
-                } catch (error) {
-                  console.error("Error marking video as watched:", error);
-                }
-              }
               if (onEnded) {
                 onEnded();
               }
@@ -147,6 +135,19 @@ const VideoJS: React.FC<VideoJSProps> = ({ options, onReady, onEnded }) => {
                 "visibilitychange",
                 handleVisibilityChange
               );
+            });
+            player.on("play",async () => {
+              if (session && session.user) {
+                try {
+                  await axios.post("/api/markVideoWatched", {
+                    userId: session.user.use_id ?? 0,
+                    videoId: options.sources?.[0].id ?? 0,
+                    courseId: options.sources?.[0].couseId ?? 0,
+                  });
+                } catch (error) {
+                  console.error("Error marking video as watched:", error);
+                }
+              }
             });
           }
         ) as unknown as VideoJsPlayer);
