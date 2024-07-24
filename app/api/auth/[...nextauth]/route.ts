@@ -4,15 +4,15 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import prisma from "@/utils/prisma";
 import type { DefaultSession, NextAuthOptions } from "next-auth";
 import type { AdapterUser } from "next-auth/adapters";
-
+import axios from "axios";
 interface CustomUser extends AdapterUser {
   id: string;
   email: string;
   phone: string;
   role: string;
   name: string;
-  use_id:string;
-  full_name:string;
+  use_id: string;
+  full_name: string;
 }
 
 declare module "next-auth" {
@@ -22,8 +22,8 @@ declare module "next-auth" {
       phone: string;
       role: string;
       name: string;
-      use_id:string;
-      full_name:string;
+      use_id: string;
+      full_name: string;
     } & DefaultSession["user"];
   }
 
@@ -33,15 +33,15 @@ declare module "next-auth" {
     phone: string;
     role: string;
     name: string;
-    use_id:string;
-    full_name:string;
+    use_id: string;
+    full_name: string;
   }
 }
 
 const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   session: {
-    strategy: "jwt", 
+    strategy: "jwt",
     maxAge: 60 * 60,
   },
   pages: {
@@ -76,8 +76,8 @@ const authOptions: NextAuthOptions = {
           phone: customUser.phone,
           role: customUser.role,
           name: customUser.name,
-          use_id:customUser.use_id,
-          full_name:customUser.full_name,
+          use_id: customUser.use_id,
+          full_name: customUser.full_name,
         };
       }
       return token;
@@ -89,8 +89,8 @@ const authOptions: NextAuthOptions = {
         phone: token.phone as string,
         role: token.role as string,
         name: token.name as string,
-        use_id:token.use_id as string,
-        full_name:token.full_name as string,
+        use_id: token.use_id as string,
+        full_name: token.full_name as string,
       };
       return session;
     },
@@ -115,25 +115,65 @@ async function fetchUserFromDatabase(
   password: string
 ): Promise<CustomUser | null> {
   try {
-    const user = await prisma.users.findUnique({
-      where: {
+    const response = await axios.post(
+      "https://account.base.vn/extapi/v1/user/search.by.email",
+      new URLSearchParams({
+        access_token: process.env.BASE_API_TOKEN!,
         email: email,
-      },
-    });
-     console.log("user", user); 
-    if (user && user.password === password) {
-      return {
-        id: user.id.toString(),
-        email: user.email,
-        phone: user.password,
-        role: user.role || "",
-        emailVerified:  new Date(user.email),
-        name: user.name,
-        use_id:user.user_id || "",
-        full_name:user.full_name || "",
-      };
+      }),
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
+    const userBaseAccount = response.data;
+    if (userBaseAccount && userBaseAccount.message === "success") {
+      const userDataBase = await prisma.users.findUnique({
+        where: {
+          email: email,
+        },
+      });
+      if (userDataBase) {
+        if (userDataBase.password === password) {
+          return {
+            id: userDataBase.id.toString(),
+            email: userDataBase.email,
+            phone: userDataBase.password,
+            role: userDataBase.role || "",
+            emailVerified: new Date(userDataBase.email),
+            name: userDataBase.name,
+            use_id: userDataBase.user_id || "",
+            full_name: userDataBase.full_name || "",
+          };
+        }
+      } else {
+        if (password == "12345678") {
+          const newUser = await prisma.users.create({
+            data: {
+              user_id: userBaseAccount.user.uid,
+              email: userBaseAccount.user.email,
+              password: "12345678",
+              role: userBaseAccount.user.role === "13"? "admin" : "user",
+              full_name: userBaseAccount.user.name,
+              created_at: new Date(),
+              update_at: new Date(),
+              name: userBaseAccount.user.username,
+            },
+          });
+          return {
+            id: newUser.id.toString(),
+            email: newUser.email,
+            phone: newUser.password || "",
+            role: newUser.role || "",
+            emailVerified: new Date(newUser.email),
+            name: newUser.name,
+            use_id: newUser.user_id || "",
+            full_name: newUser.full_name || "",
+          };
+        }
+      }
     }
-
     return null;
   } catch (error) {
     console.error("Error fetching user from database", error);

@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
 
   csvStream.pipe(passThrough);
 
-  users.forEach(user => {
+  users.forEach((user: { id: any; user_id: any; name: any; full_name: any; day_off: any; email: any; role: any; created_at: any; update_at: any; }) => {
     csvStream.write({
       id: user.id,
       user_id: user.user_id,
