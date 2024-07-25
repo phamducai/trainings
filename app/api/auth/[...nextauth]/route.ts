@@ -8,29 +8,31 @@ import axios from "axios";
 interface CustomUser extends AdapterUser {
   id: string;
   email: string;
-  phone: string;
+  password: string;
   role: string;
   name: string;
   use_id: string;
   full_name: string;
+  isPasswordChanged: boolean;
 }
 
 declare module "next-auth" {
   interface Session {
     user: {
       id: string;
-      phone: string;
+      password: string;
       role: string;
       name: string;
       use_id: string;
       full_name: string;
+      isPasswordChanged: boolean; // Add the isPasswordChanged property
     } & DefaultSession["user"];
   }
 
   interface User {
     id: string;
     email: string;
-    phone: string;
+    password: string;
     role: string;
     name: string;
     use_id: string;
@@ -73,24 +75,27 @@ const authOptions: NextAuthOptions = {
         return {
           ...token,
           id: customUser.id,
-          phone: customUser.phone,
+          password: customUser.password,
           role: customUser.role,
           name: customUser.name,
           use_id: customUser.use_id,
           full_name: customUser.full_name,
+          isPasswordChanged: customUser.isPasswordChanged,
         };
       }
+      console.log("token", token);
       return token;
     },
     async session({ session, token }) {
       session.user = {
         ...session.user,
         id: token.id as string,
-        phone: token.phone as string,
+        password: token.password as string,
         role: token.role as string,
         name: token.name as string,
         use_id: token.use_id as string,
         full_name: token.full_name as string,
+        isPasswordChanged: token.isPasswordChanged as boolean,
       };
       return session;
     },
@@ -139,12 +144,13 @@ async function fetchUserFromDatabase(
           return {
             id: userDataBase.id.toString(),
             email: userDataBase.email,
-            phone: userDataBase.password,
+            password: userDataBase.password,
             role: userDataBase.role || "",
             emailVerified: new Date(userDataBase.email),
             name: userDataBase.name,
             use_id: userDataBase.user_id || "",
             full_name: userDataBase.full_name || "",
+            isPasswordChanged: userDataBase.isPasswordChanged || false, 
           };
         }
       } else {
@@ -159,17 +165,19 @@ async function fetchUserFromDatabase(
               created_at: new Date(),
               update_at: new Date(),
               name: userBaseAccount.user.username,
+              isPasswordChanged: false,
             },
           });
           return {
             id: newUser.id.toString(),
             email: newUser.email,
-            phone: newUser.password || "",
+            password: newUser.password || "",
             role: newUser.role || "",
             emailVerified: new Date(newUser.email),
             name: newUser.name,
             use_id: newUser.user_id || "",
             full_name: newUser.full_name || "",
+            isPasswordChanged: newUser.isPasswordChanged || false,
           };
         }
       }

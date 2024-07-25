@@ -5,8 +5,10 @@ import { Navbar } from "flowbite-react";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
-
-export function Header() {
+interface HeaderProps {
+  activeLink?: number;
+}
+export function Header({ activeLink }: HeaderProps) {
   const router = useRouter();
   const { data: session, status } = useSession();
   const isAdmin = session?.user?.role === "admin";
@@ -27,12 +29,14 @@ export function Header() {
       </Navbar.Brand>
       <Navbar.Toggle />
       <Navbar.Collapse className="cursor-pointer">
-        <Navbar.Link active onClick={() => router.push("/")}>
+        <Navbar.Link active={activeLink === 1 || activeLink === undefined} onClick={() => router.push("/")}>
           Trang Chủ
         </Navbar.Link>
-        {/* <Navbar.Link href="#">Khóa Học Của Tôi</Navbar.Link> */}
+        <Navbar.Link active={activeLink === 2} onClick={() => router.push("/change-password")}>
+          Đổi Mật Khẩu
+        </Navbar.Link>
         {isAdmin && ( 
-          <Navbar.Link onClick={() => router.push("/admin")}>
+          <Navbar.Link active={activeLink === 3} onClick={() => router.push("/admin")}>
             Quản Trị
           </Navbar.Link>
         )}

@@ -46,13 +46,36 @@ import { Header } from "@/component/Header";
 import { CardComponent } from "@/component/CardComponent";
 import { FooterComponents } from "@/component/Footer";
 import { LoadingComponent } from "@/component/Loading";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [courses, setCourses] = useState<CourseDto[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const { data: session, status } = useSession();
+
+  const router = useRouter();
 
   useEffect(() => {
-    async function fetchData() {
+    const checkPasswordChangeStatus = async () => {
+      if (status === "authenticated" && session?.user) {
+        try {
+          const response = await axios.post(`/api/get-user`, { email: session.user.email });
+          const user = response.data;
+          if (user.isPasswordChanged === false) {
+            router.push("/change-password");
+          } else {
+            fetchData();
+          }
+        } catch (error) {
+          console.error("Error fetching user:", error);
+        }
+      } else if (status === "unauthenticated") {
+        router.push("/login");
+      }
+    };
+
+    const fetchData = async () => {
       try {
         const res = await axios.get("/api/courses");
         setCourses(res.data);
@@ -61,9 +84,10 @@ export default function Home() {
       } finally {
         setLoading(false);
       }
-    }
-    fetchData();
-  }, []);
+    };
+
+    checkPasswordChangeStatus();
+  }, [status]);
 
   return (
     <div className="">
