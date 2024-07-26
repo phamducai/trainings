@@ -83,7 +83,7 @@ const authOptions: NextAuthOptions = {
           isPasswordChanged: customUser.isPasswordChanged,
         };
       }
-      console.log("token", token);
+    
       return token;
     },
     async session({ session, token }) {
@@ -134,6 +134,7 @@ async function fetchUserFromDatabase(
     );
     const userBaseAccount = response.data;
     if (userBaseAccount && userBaseAccount.message === "success") {
+      console.log("userBaseAccount", userBaseAccount);
       const userDataBase = await prisma.users.findUnique({
         where: {
           email: email,
@@ -155,6 +156,7 @@ async function fetchUserFromDatabase(
         }
       } else {
         if (password == "12345678") {
+          console.log("register new user");
           const newUser = await prisma.users.create({
             data: {
               user_id: userBaseAccount.user.uid,
