@@ -33,7 +33,8 @@ import axios from "axios";
 
 async function sendPasswordResetEmail(
     email: string,
-    temporaryPassword: string
+    temporaryPassword: string,
+    username: string
   ) {
     console.log(email, "email");
     console.log(process.env.EMAIL_USER, process.env.EMAIL_PASS);
@@ -52,12 +53,19 @@ async function sendPasswordResetEmail(
     });
   
     const mailOptions = {
-      from: process.env.EMAIL_USER, // Địa chỉ email người gửi
-      to: email,
-      subject: 'Đặt lại mật khẩu thành công',
-      text: `Mật khẩu mới của của bạn là: ${temporaryPassword}`,
-      html: `<p>Mật khẩu mới của của bạn là: <strong>${temporaryPassword}</strong></p>`,
-    };
+        from: process.env.EMAIL_USER, // Địa chỉ email người gửi
+        to: email,
+        subject: 'Mật khẩu đăng nhập Elearning của bạn đã thay đổi',
+        text: `Mật khẩu mới của của bạn là: ${temporaryPassword}`,
+        html: `
+          <p>Xin chào ${username},</p>
+          <p>Mật khẩu đăng nhập vào tài khoản Elearning của bạn đã thay đổi thành công.</p>
+          <p>Vui lòng đăng nhập bằng mật khẩu mới: <strong>${temporaryPassword}</strong></p>
+          <p>Nếu bạn không thực hiện thay đổi này, vui lòng liên hệ Bộ phận Nhân sự qua mail <a href="mailto:nhansu@famima.vn">nhansu@famima.vn</a> để được hỗ trợ.</p>
+          <p>Trân trọng,</p>
+          <p>FamilyMart</p>
+        `,
+      };
   
     try {
       await transporter.sendMail(mailOptions);
@@ -107,14 +115,13 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ message: "Email không hợp lệ" }, { status: 404 });
     }
 
+     console.log(userBaseAccount, "userBaseAccount");
     await prisma.users.update({
       where: { email },
       data: { password: temporaryPassword },
     });
 
-    // Gửi email chứa mật khẩu tạm thời
-    await sendPasswordResetEmail(email, temporaryPassword);
-
+    await sendPasswordResetEmail(email, temporaryPassword,userBaseAccount?.user?.name);
     return NextResponse.json(
       { message: "Đã gửi email đặt lại mật khẩu" },
       { status: 200 }
