@@ -107,10 +107,10 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ message: "Email không hợp lệ" }, { status: 404 });
     }
 
-    // await prisma.users.update({
-    //   where: { email },
-    //   data: { password: temporaryPassword },
-    // });
+    await prisma.users.update({
+      where: { email },
+      data: { password: temporaryPassword },
+    });
 
     // Gửi email chứa mật khẩu tạm thời
     await sendPasswordResetEmail(email, temporaryPassword);
