@@ -71,9 +71,9 @@ const VideoJS: React.FC<VideoJSProps> = ({ options, onReady, onEnded }) => {
 
             // Add watermark
             const watermarkDiv = document.createElement("div");
-            watermarkDiv.innerText = `${session?.user?.use_id || ""} - ${
-              session?.user?.full_name || ""
-            }`;
+            watermarkDiv.innerText = `${session?.user?.full_name || ""} (${
+              session?.user?.name || ""
+            }) `;
             watermarkDiv.style.position = "absolute";
             watermarkDiv.style.top = "10px";
             watermarkDiv.style.right = "10px";

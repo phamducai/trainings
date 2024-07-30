@@ -95,7 +95,7 @@ export default function Home() {
       {loading ? (
         <LoadingComponent />
       ) : (
-        <div className="mt-20 container mx-auto mb-80">
+        <div className="mt-20 container mx-auto mb-20">
           <div className="h-72 sm:h-96">
             <CarouselComponent />
           </div>
@@ -111,7 +111,7 @@ export default function Home() {
           </div>
         </div>
       )}
-      <FooterComponents />
+      {!loading && <FooterComponents />}
     </div>
   );
 }

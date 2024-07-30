@@ -134,13 +134,13 @@ async function fetchUserFromDatabase(
     );
     const userBaseAccount = response.data;
     if (userBaseAccount && userBaseAccount.message === "success") {
-      console.log("userBaseAccount", userBaseAccount);
       const userDataBase = await prisma.users.findUnique({
         where: {
           email: email,
         },
       });
       if (userDataBase) {
+        console.log("userDataBase", userDataBase);
         if (userDataBase.password === password) {
           return {
             id: userDataBase.id.toString(),
@@ -156,7 +156,6 @@ async function fetchUserFromDatabase(
         }
       } else {
         if (password == "12345678") {
-          console.log("register new user");
           const newUser = await prisma.users.create({
             data: {
               user_id: userBaseAccount.user.uid,

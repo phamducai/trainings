@@ -4,7 +4,7 @@ import { BsFacebook, BsTiktok, BsYoutube,BsFillPhoneFill, BsMailbox2Flag} from "
 export function FooterComponents() {
   const currentYear = new Date().getFullYear();
   return (
-    <Footer container className="fixed bottom-0 w-full z-50">
+    <Footer container className="w-full z-50">
       <div className="w-full text-center">
         <div className="w-full justify-between sm:flex sm:items-center sm:justify-between">
           <Footer.Brand
@@ -13,12 +13,16 @@ export function FooterComponents() {
             alt="Flowbite Logo"
 
           />
-          <Footer.LinkGroup>
-            <Footer.Link href="#">About</Footer.Link>
-            <Footer.Link href="#">Privacy Policy</Footer.Link>
-            <Footer.Link href="#">Licensing</Footer.Link>
-            <Footer.Link href="#">Contact</Footer.Link>
-          </Footer.LinkGroup>
+           <div className="text-left">
+            <div>
+              <Footer.Title title="Liên Hệ" />
+              <Footer.LinkGroup col className="text-left">
+                <a  href="mailto:nhansu@famima.vn"  className="text">Email : nhansu@famima.vn</a>
+                <a href="tel:02839306575">Hotline : 02839306575 - Line 208</a>
+              </Footer.LinkGroup>
+            </div>
+          
+          </div>
         </div>
         <Footer.Divider />
         <div className="w-full flex items-center justify-between">
@@ -27,8 +31,6 @@ export function FooterComponents() {
             <Footer.Icon href="https://www.facebook.com/FamilyMartVietnam/" icon={BsFacebook} />
             <Footer.Icon href="#" icon={BsYoutube} />
             <Footer.Icon href="https://www.tiktok.com/@familymartvnofficial" icon={BsTiktok} />
-            {/* <Footer.Icon href="028 3930 6575" icon={BsFillPhoneFill} />
-            <Footer.Icon href="nhansu@famima.vn" icon={BsMailbox2Flag} type="email"/> */}
           </div>
         </div>
       </div>
