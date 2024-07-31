@@ -7,8 +7,8 @@ const queue = new Bull('data-processing', {
   },
 });
 
-export const addJobToQueue = () => {
-  queue.add({});
+export const addJobToQueue = (courseId: string) => {
+  queue.add({ courseId });
 };
 
 export default queue;
