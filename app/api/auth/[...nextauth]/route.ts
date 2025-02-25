@@ -4,7 +4,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import prisma from "@/utils/prisma";
 import type { DefaultSession, NextAuthOptions } from "next-auth";
 import type { AdapterUser } from "next-auth/adapters";
-import axios from "axios";
+// import axios from "axios";
 interface CustomUser extends AdapterUser {
   id: string;
   email: string;
@@ -120,69 +120,91 @@ async function fetchUserFromDatabase(
   password: string
 ): Promise<CustomUser | null> {
   try {
-    const response = await axios.post(
-      "https://account.base.vn/extapi/v1/user/search.by.email",
-      new URLSearchParams({
-        access_token: process.env.BASE_API_TOKEN!,
+    const userDataBase = await prisma.users.findUnique({
+      where: {
         email: email,
-      }),
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      }
-    );
-    const userBaseAccount = response.data;
-    if (userBaseAccount && userBaseAccount.message === "success") {
-      const userDataBase = await prisma.users.findUnique({
-        where: {
-          email: email,
-        },
-      });
-      if (userDataBase) {
-        console.log("userDataBase", userDataBase);
-        if (userDataBase.password === password) {
-          return {
-            id: userDataBase.id.toString(),
-            email: userDataBase.email,
-            password: userDataBase.password,
-            role: userDataBase.role || "",
-            emailVerified: new Date(userDataBase.email),
-            name: userDataBase.name,
-            use_id: userDataBase.user_id || "",
-            full_name: userDataBase.full_name || "",
-            isPasswordChanged: userDataBase.isPasswordChanged || false, 
-          };
-        }
-      } else {
-        if (password == "12345678") {
-          const newUser = await prisma.users.create({
-            data: {
-              user_id: userBaseAccount.user.uid,
-              email: userBaseAccount.user.email,
-              password: "12345678",
-              role: userBaseAccount.user.role === "13"? "admin" : "user",
-              full_name: userBaseAccount.user.name,
-              created_at: new Date(),
-              update_at: new Date(),
-              name: userBaseAccount.user.username,
-              isPasswordChanged: false,
-            },
-          });
-          return {
-            id: newUser.id.toString(),
-            email: newUser.email,
-            password: newUser.password || "",
-            role: newUser.role || "",
-            emailVerified: new Date(newUser.email),
-            name: newUser.name,
-            use_id: newUser.user_id || "",
-            full_name: newUser.full_name || "",
-            isPasswordChanged: newUser.isPasswordChanged || false,
-          };
-        }
+      },
+    });
+    if(userDataBase){
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); 
+      if(userDataBase.password === password && (userDataBase.day_off === null|| userDataBase.day_off  >=today)){
+        return {
+                id: userDataBase.id.toString(),
+                email: userDataBase.email,
+                password: userDataBase.password,
+                role: userDataBase.role || "",
+                emailVerified: new Date(userDataBase.email),
+                name: userDataBase.name,
+                use_id: userDataBase.user_id || "",
+                full_name: userDataBase.full_name || "",
+                isPasswordChanged: userDataBase.isPasswordChanged || false, 
+        };
       }
     }
+    // const response = await axios.post(
+    //   "https://account.base.vn/extapi/v1/user/search.by.email",
+    //   new URLSearchParams({
+    //     access_token: process.env.BASE_API_TOKEN!,
+    //     email: email,
+    //   }),
+    //   {
+    //     headers: {
+    //       "Content-Type": "application/x-www-form-urlencoded",
+    //     },
+    //   }
+    // );
+    // const userBaseAccount = response.data;
+    // if (userBaseAccount && userBaseAccount.message === "success") {
+    //   const userDataBase = await prisma.users.findUnique({
+    //     where: {
+    //       email: email,
+    //     },
+    //   });
+    //   if (userDataBase) {
+    //     console.log("userDataBase", userDataBase);
+    //     if (userDataBase.password === password) {
+    //       return {
+    //         id: userDataBase.id.toString(),
+    //         email: userDataBase.email,
+    //         password: userDataBase.password,
+    //         role: userDataBase.role || "",
+    //         emailVerified: new Date(userDataBase.email),
+    //         name: userDataBase.name,
+    //         use_id: userDataBase.user_id || "",
+    //         full_name: userDataBase.full_name || "",
+    //         isPasswordChanged: userDataBase.isPasswordChanged || false, 
+    //       };
+    //     }
+    //   } else {
+    //     if (password == "12345678") {
+    //       const newUser = await prisma.users.create({
+    //         data: {
+    //           user_id: userBaseAccount.user.uid,
+    //           email: userBaseAccount.user.email,
+    //           password: "12345678",
+    //           role: userBaseAccount.user.role === "13"? "admin" : "user",
+    //           full_name: userBaseAccount.user.name,
+    //           created_at: new Date(),
+    //           update_at: new Date(),
+    //           name: userBaseAccount.user.username,
+    //           isPasswordChanged: false,
+    //         },
+    //       });
+    //       return {
+    //         id: newUser.id.toString(),
+    //         email: newUser.email,
+    //         password: newUser.password || "",
+    //         role: newUser.role || "",
+    //         emailVerified: new Date(newUser.email),
+    //         name: newUser.name,
+    //         use_id: newUser.user_id || "",
+    //         full_name: newUser.full_name || "",
+    //         isPasswordChanged: newUser.isPasswordChanged || false,
+    //       };
+    //     }
+    //   }
+    // }
     return null;
   } catch (error) {
     console.error("Error fetching user from database", error);
