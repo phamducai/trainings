@@ -36,6 +36,9 @@ async function sendPasswordResetEmail(
     temporaryPassword: string,
     username: string
   ) {
+    console.log(email, "email");
+    console.log(process.env.EMAIL_USER, process.env.EMAIL_PASS);
+  
     const transporter = nodemailer.createTransport({
       host: 'mail.famima.vn', // Thay đổi thành máy chủ SMTP của công ty bạn
       port: 465, // Cổng thường dùng cho TLS, thay đổi nếu cần
@@ -94,36 +97,31 @@ export async function POST(req: NextRequest) {
   console.log(temporaryPassword, "temporaryPassword");
 
   try {
-    // const response = await axios.post(
-    //   "https://account.base.vn/extapi/v1/user/search.by.email",
-    //   new URLSearchParams({
-    //     access_token: process.env.BASE_API_TOKEN!,
-    //     email: email,
-    //   }),
-    //   {
-    //     headers: {
-    //       "Content-Type": "application/x-www-form-urlencoded",
-    //     },
-    //   }
-    // );
-    // const userBaseAccount = response.data;
-
-    // if (userBaseAccount.code == 0) {
-    //     return NextResponse.json({ message: "Email không hợp lệ" }, { status: 404 });
-    // }
-
-    //  console.log(userBaseAccount, "userBaseAccount");
-     const userBaseAccount =await prisma.users.findUnique({
-      where: {
+    const response = await axios.post(
+      "https://account.base.vn/extapi/v1/user/search.by.email",
+      new URLSearchParams({
+        access_token: process.env.BASE_API_TOKEN!,
         email: email,
-      },
-    });
+      }),
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
+    const userBaseAccount = response.data;
+
+    if (userBaseAccount.code == 0) {
+        return NextResponse.json({ message: "Email không hợp lệ" }, { status: 404 });
+    }
+
+     console.log(userBaseAccount, "userBaseAccount");
     await prisma.users.update({
       where: { email },
       data: { password: temporaryPassword },
     });
 
-    await sendPasswordResetEmail(email, temporaryPassword,userBaseAccount?.full_name || "");
+    await sendPasswordResetEmail(email, temporaryPassword,userBaseAccount?.user?.name);
     return NextResponse.json(
       { message: "Đã gửi email đặt lại mật khẩu" },
       { status: 200 }
